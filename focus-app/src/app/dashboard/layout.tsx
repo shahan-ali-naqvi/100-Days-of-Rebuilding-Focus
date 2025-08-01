@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Header } from "@/components/partials/header"
 import { Sidebar } from "@/components/partials/sidebar"
 
-export default function ProtectedLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
@@ -12,17 +12,17 @@ export default function ProtectedLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="h-screen bg-background">
+    <div className="flex h-screen bg-background">
       <Sidebar 
         isOpen={sidebarOpen} 
         onClose={() => setSidebarOpen(false)} 
       />
       
-      <div className="lg:pl-64">
+      <div className="flex flex-col flex-1 lg:ml-64">
         <Header onMenuToggle={() => setSidebarOpen(true)} />
         
-        <main className="h-[calc(100vh-4rem)] overflow-y-auto">
-          <div className="p-6">
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-6 h-full">
             {children}
           </div>
         </main>

@@ -1,19 +1,14 @@
-"use client"
-
-import { useSession } from "next-auth/react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Target, Calendar, CheckSquare, TrendingUp, Plus, Clock } from "lucide-react"
 
 export default function DashboardPage() {
-  const { data: session } = useSession()
-
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">
-          Welcome back, {session?.user?.name?.split(' ')[0] || 'User'}!
+          Welcome to Focus!
         </h1>
         <p className="text-muted-foreground mt-2">
           Day 1 of your 100-day focus journey. Let us build better habits together.

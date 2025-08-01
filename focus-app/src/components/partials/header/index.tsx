@@ -1,9 +1,9 @@
 "use client"
 
-import { signOut, useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Target, LogOut, Menu } from "lucide-react"
+import { Target, Menu, Settings, LogOut, User } from "lucide-react"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 
 interface HeaderProps {
@@ -11,7 +11,12 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuToggle }: HeaderProps) {
-  const { data: session } = useSession()
+  const router = useRouter()
+
+  const handleLogout = () => {
+    // In a real app, you'd clear tokens/session here
+    router.push("/auth/login")
+  }
 
   return (
     <header className="h-16 border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
@@ -38,25 +43,44 @@ export function Header({ onMenuToggle }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon">
+            <Settings className="h-5 w-5" />
+          </Button>
+          
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback>
-                    {session?.user?.name?.charAt(0) || 'U'}
-                  </AvatarFallback>
+                  <AvatarFallback>U</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Portal>
-              <DropdownMenu.Content className="w-56 bg-card border rounded-md shadow-md p-1" align="end">
-                <DropdownMenu.Label className="px-2 py-1.5 text-sm font-medium">
-                  {session?.user?.name || 'User'}
-                </DropdownMenu.Label>
-                <DropdownMenu.Separator className="h-px bg-border mx-1" />
-                <DropdownMenu.Item
-                  className="flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer hover:bg-accent rounded"
-                  onClick={() => signOut()}
+              <DropdownMenu.Content 
+                className="w-56 bg-white border border-gray-200 rounded-md shadow-lg p-1 z-50" 
+                align="end"
+                sideOffset={8}
+              >
+                <div className="px-3 py-2 border-b border-gray-100">
+                  <p className="text-sm font-medium text-gray-900">User</p>
+                  <p className="text-xs text-gray-500">demo@focus.com</p>
+                </div>
+                
+                <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded cursor-pointer outline-none">
+                  <User className="h-4 w-4" />
+                  Profile
+                </DropdownMenu.Item>
+                
+                <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded cursor-pointer outline-none">
+                  <Settings className="h-4 w-4" />
+                  Settings
+                </DropdownMenu.Item>
+                
+                <DropdownMenu.Separator className="h-px bg-gray-200 my-1" />
+                
+                <DropdownMenu.Item 
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded cursor-pointer outline-none"
+                  onClick={handleLogout}
                 >
                   <LogOut className="h-4 w-4" />
                   Sign out

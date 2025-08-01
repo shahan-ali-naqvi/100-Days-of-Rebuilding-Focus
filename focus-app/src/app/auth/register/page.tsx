@@ -3,14 +3,19 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Target, Eye, EyeOff } from "lucide-react"
+import { Target, Eye, EyeOff, Check } from "lucide-react"
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
     email: "",
-    password: ""
+    password: "",
+    confirmPassword: ""
   })
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
@@ -25,12 +30,21 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
     
-    // Simulate login delay
+    // Simulate registration delay
     setTimeout(() => {
       setIsLoading(false)
       router.push("/dashboard")
-    }, 1000)
+    }, 1500)
   }
+
+  const passwordRequirements = [
+    { text: "At least 8 characters", met: formData.password.length >= 8 },
+    { text: "Contains uppercase letter", met: /[A-Z]/.test(formData.password) },
+    { text: "Contains lowercase letter", met: /[a-z]/.test(formData.password) },
+    { text: "Contains number", met: /\d/.test(formData.password) },
+  ]
+
+  const passwordsMatch = formData.password === formData.confirmPassword && formData.confirmPassword !== ""
 
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-50">
@@ -41,12 +55,12 @@ export default function LoginPage() {
           </div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-          Sign in to your account
+          Create your account
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <Link href="/auth/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-            create a new account
+          <Link href="/auth/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            sign in to your existing account
           </Link>
         </p>
       </div>
@@ -54,6 +68,46 @@ export default function LoginPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                  First name
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    autoComplete="given-name"
+                    required
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                    placeholder="John"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                  Last name
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    autoComplete="family-name"
+                    required
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
@@ -68,7 +122,7 @@ export default function LoginPage() {
                   value={formData.email}
                   onChange={handleChange}
                   className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  placeholder="Enter your email"
+                  placeholder="john@example.com"
                 />
               </div>
             </div>
@@ -82,12 +136,12 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   required
                   value={formData.password}
                   onChange={handleChange}
                   className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 pr-10 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  placeholder="Enter your password"
+                  placeholder="Create a strong password"
                 />
                 <button
                   type="button"
@@ -101,32 +155,90 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+              
+              {formData.password && (
+                <div className="mt-2 space-y-1">
+                  {passwordRequirements.map((req, index) => (
+                    <div key={index} className="flex items-center text-sm">
+                      <Check 
+                        className={`h-4 w-4 mr-2 ${
+                          req.met ? 'text-green-500' : 'text-gray-300'
+                        }`} 
+                      />
+                      <span className={req.met ? 'text-green-700' : 'text-gray-500'}>
+                        {req.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirm password
+              </label>
+              <div className="mt-1 relative">
                 <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={`block w-full appearance-none rounded-md border px-3 py-2 pr-10 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-indigo-500 sm:text-sm ${
+                    formData.confirmPassword && !passwordsMatch
+                      ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:border-indigo-500'
+                  }`}
+                  placeholder="Confirm your password"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                  Remember me
-                </label>
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-400" />
+                  )}
+                </button>
               </div>
+              {formData.confirmPassword && !passwordsMatch && (
+                <p className="mt-1 text-sm text-red-600">Passwords do not match</p>
+              )}
+              {passwordsMatch && (
+                <p className="mt-1 text-sm text-green-600">Passwords match!</p>
+              )}
+            </div>
 
-              <div className="text-sm">
-                <Link href="/auth/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
-                  Forgot your password?
+            <div className="flex items-center">
+              <input
+                id="terms"
+                name="terms"
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
+                I agree to the{' '}
+                <Link href="#" className="text-indigo-600 hover:text-indigo-500">
+                  Terms and Conditions
                 </Link>
-              </div>
+                {' '}and{' '}
+                <Link href="#" className="text-indigo-600 hover:text-indigo-500">
+                  Privacy Policy
+                </Link>
+              </label>
             </div>
 
             <div>
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || !agreedToTerms || !passwordsMatch}
                 className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
@@ -135,10 +247,10 @@ export default function LoginPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Signing in...
+                    Creating account...
                   </>
                 ) : (
-                  'Sign in'
+                  'Create account'
                 )}
               </button>
             </div>
@@ -177,14 +289,6 @@ export default function LoginPage() {
                 </svg>
                 <span className="ml-2">GitHub</span>
               </button>
-            </div>
-          </div>
-
-          <div className="mt-6 p-4 bg-blue-50 rounded-md">
-            <div className="text-sm text-blue-800">
-              <p className="font-medium">Demo Account:</p>
-              <p>Email: demo@focus.com</p>
-              <p>Password: demo123</p>
             </div>
           </div>
         </div>
