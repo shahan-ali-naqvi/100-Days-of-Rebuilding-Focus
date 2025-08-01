@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
             Check your email
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            We've sent a password reset link to <span className="font-medium">{email}</span>
+            We&apos;ve sent a password reset link to <span className="font-medium">{email}</span>
           </p>
         </div>
 
@@ -43,12 +43,12 @@ export default function ForgotPasswordPage() {
               <div className="bg-blue-50 p-4 rounded-md">
                 <Mail className="h-12 w-12 text-blue-600 mx-auto mb-4" />
                 <p className="text-sm text-blue-800">
-                  We've sent instructions to reset your password to your email address.
+                  We&apos;ve sent instructions to reset your password to your email address.
                 </p>
               </div>
               
               <div className="text-sm text-gray-600 space-y-2">
-                <p>Didn't receive the email?</p>
+                <p>Didn&apos;t receive the email?</p>
                 <div className="space-y-2">
                   <p>• Check your spam or junk folder</p>
                   <p>• Make sure you entered the correct email</p>
@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
           Forgot your password?
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          No worries! Enter your email address and we'll send you a link to reset your password.
+          No worries! Enter your email address and we&apos;ll send you a link to reset your password.
         </p>
       </div>
 
@@ -115,7 +115,7 @@ export default function ForgotPasswordPage() {
                 />
               </div>
               <div className="mt-2 text-sm text-gray-500">
-                We'll send a reset link to this email address.
+                We&apos;ll send a reset link to this email address.
               </div>
             </div>
 
@@ -154,7 +154,7 @@ export default function ForgotPasswordPage() {
           <div className="mt-6 p-4 bg-yellow-50 rounded-md">
             <div className="text-sm text-yellow-800">
               <p className="font-medium mb-2">Demo Mode:</p>
-              <p>In demo mode, no actual email will be sent. Click "Send reset link" to see the success state.</p>
+              <p>In demo mode, no actual email will be sent. Click &quot;Send reset link&quot; to see the success state.</p>
             </div>
           </div>
         </div>
