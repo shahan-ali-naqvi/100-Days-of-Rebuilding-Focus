@@ -24,31 +24,37 @@ const navigation = [
     name: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+    implemented: true,
   },
   {
     name: "Goals",
     href: "/goals",
     icon: Target,
+    implemented: false,
   },
   {
     name: "Habits",
     href: "/habits",
     icon: CheckSquare,
+    implemented: false,
   },
   {
     name: "Calendar",
     href: "/calendar",
     icon: Calendar,
+    implemented: false,
   },
   {
     name: "Progress",
     href: "/progress",
     icon: TrendingUp,
+    implemented: false,
   },
   {
     name: "Settings",
     href: "/settings",
     icon: Settings,
+    implemented: false,
   },
 ]
 
@@ -93,6 +99,22 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           <nav className="flex-1 p-4 space-y-2">
             {navigation.map((item) => {
               const isActive = pathname === item.href
+              
+              if (!item.implemented) {
+                return (
+                  <div
+                    key={item.name}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium cursor-not-allowed opacity-50",
+                      "text-muted-foreground"
+                    )}
+                  >
+                    <item.icon className="h-5 w-5" />
+                    {item.name}
+                  </div>
+                )
+              }
+              
               return (
                 <Link
                   key={item.name}

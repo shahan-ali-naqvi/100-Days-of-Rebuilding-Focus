@@ -43,7 +43,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" disabled className="cursor-not-allowed opacity-50">
             <Settings className="h-5 w-5" />
           </Button>
           
@@ -71,10 +71,10 @@ export function Header({ onMenuToggle }: HeaderProps) {
                   Profile
                 </DropdownMenu.Item>
                 
-                <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded cursor-pointer outline-none">
+                <div className="flex items-center gap-2 px-3 py-2 text-sm text-gray-400 rounded cursor-not-allowed opacity-50">
                   <Settings className="h-4 w-4" />
                   Settings
-                </DropdownMenu.Item>
+                </div>
                 
                 <DropdownMenu.Separator className="h-px bg-gray-200 my-1" />
                 
