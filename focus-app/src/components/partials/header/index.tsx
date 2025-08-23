@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Target, Menu, Settings, LogOut, User } from "lucide-react"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import { useDay } from "@/contexts/DayContext"
 
 interface HeaderProps {
   onMenuToggle?: () => void
@@ -12,6 +13,7 @@ interface HeaderProps {
 
 export function Header({ onMenuToggle }: HeaderProps) {
   const router = useRouter()
+  const { currentDay } = useDay()
 
   const handleLogout = () => {
     // In a real app, you'd clear tokens/session here
@@ -37,13 +39,17 @@ export function Header({ onMenuToggle }: HeaderProps) {
             </div>
             <div>
               <h1 className="text-xl font-semibold">Focus</h1>
-              <p className="text-xs text-muted-foreground">Day 1 of 100</p>
+              <p className="text-xs text-muted-foreground">Day {currentDay} of 100</p>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" disabled className="cursor-not-allowed opacity-50">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => router.push("/settings")}
+          >
             <Settings className="h-5 w-5" />
           </Button>
           
@@ -71,10 +77,13 @@ export function Header({ onMenuToggle }: HeaderProps) {
                   Profile
                 </DropdownMenu.Item>
                 
-                <div className="flex items-center gap-2 px-3 py-2 text-sm text-gray-400 rounded cursor-not-allowed opacity-50">
+                <DropdownMenu.Item 
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded cursor-pointer outline-none"
+                  onClick={() => router.push("/settings")}
+                >
                   <Settings className="h-4 w-4" />
                   Settings
-                </div>
+                </DropdownMenu.Item>
                 
                 <DropdownMenu.Separator className="h-px bg-gray-200 my-1" />
                 

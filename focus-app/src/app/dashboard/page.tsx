@@ -1,8 +1,13 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Target, Calendar, CheckSquare, TrendingUp, Plus, Clock } from "lucide-react"
+import { useDay } from "@/contexts/DayContext"
 
 export default function DashboardPage() {
+  const { currentDay, getProgress } = useDay()
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
@@ -11,7 +16,7 @@ export default function DashboardPage() {
           Welcome to Focus!
         </h1>
         <p className="text-muted-foreground mt-2">
-          Day 1 of your 100-day focus journey. Let us build better habits together.
+          Day {currentDay} of your 100-day focus journey. Let us build better habits together.
         </p>
       </div>
 
@@ -23,7 +28,7 @@ export default function DashboardPage() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1</div>
+            <div className="text-2xl font-bold">{currentDay}</div>
             <p className="text-xs text-muted-foreground">of 100 days</p>
           </CardContent>
         </Card>
@@ -99,15 +104,15 @@ export default function DashboardPage() {
               <div>
                 <div className="flex items-center justify-between text-sm mb-2">
                   <span>Overall Progress</span>
-                  <span>1%</span>
+                  <span>{getProgress()}%</span>
                 </div>
                 <div className="h-2 bg-muted rounded-full">
-                  <div className="h-2 bg-primary rounded-full w-[1%]" />
+                  <div className="h-2 bg-primary rounded-full transition-all duration-300" style={{ width: `${getProgress()}%` }} />
                 </div>
               </div>
               
               <div className="text-center py-4">
-                <div className="text-2xl font-bold text-primary">Day 1</div>
+                <div className="text-2xl font-bold text-primary">Day {currentDay}</div>
                 <p className="text-sm text-muted-foreground">
                   Every journey begins with a single step
                 </p>

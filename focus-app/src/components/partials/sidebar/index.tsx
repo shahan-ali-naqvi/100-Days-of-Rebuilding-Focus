@@ -11,12 +11,21 @@ import {
   CheckSquare, 
   TrendingUp,
   Settings,
-  X
+  X,
+  Kanban,
+  Menu,
+  LogOut,
+  User
 } from "lucide-react"
+import { useDay } from "@/contexts/DayContext"
+import { useRouter } from "next/navigation"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 
 interface SidebarProps {
   isOpen?: boolean
   onClose?: () => void
+  onMenuToggle?: () => void
 }
 
 const navigation = [
@@ -24,6 +33,12 @@ const navigation = [
     name: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+    implemented: true,
+  },
+  {
+    name: "Tasks",
+    href: "/dashboard/tasks",
+    icon: Kanban,
     implemented: true,
   },
   {
@@ -52,14 +67,21 @@ const navigation = [
   },
   {
     name: "Settings",
-    href: "/settings",
+    href: "/dashboard/settings",
     icon: Settings,
-    implemented: false,
+    implemented: true,
   },
 ]
 
-export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
+export function Sidebar({ isOpen = true, onClose, onMenuToggle }: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const { currentDay, getProgress } = useDay()
+
+  const handleLogout = () => {
+    // In a real app, you'd clear tokens/session here
+    router.push("/auth/login")
+  }
 
   return (
     <>
@@ -78,21 +100,84 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       )}>
         <div className="flex h-full flex-col">
           {/* Header */}
-          <div className="flex h-16 items-center justify-between px-6 border-b">
-            <div className="flex items-center gap-2">
-              <div className="bg-primary/10 p-2 rounded-lg">
-                <Target className="h-6 w-6 text-primary" />
+          <div className="border-b">
+            {/* Mobile header with close button */}
+            <div className="flex h-16 items-center justify-between px-6 lg:hidden">
+              <div className="flex items-center gap-2">
+                <div className="bg-primary/10 p-2 rounded-lg">
+                  <Target className="h-6 w-6 text-primary" />
+                </div>
+                <span className="text-lg font-semibold">Focus</span>
               </div>
-              <span className="text-lg font-semibold">Focus</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+              >
+                <X className="h-5 w-5" />
+              </Button>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="lg:hidden"
-            >
-              <X className="h-5 w-5" />
-            </Button>
+
+            {/* Desktop unified header section */}
+            <div className="hidden lg:flex items-center justify-between px-6 py-4">
+              {/* Left side: Focus branding with day counter */}
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 p-2 rounded-lg">
+                  <Target className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <span className="text-lg font-semibold">Focus</span>
+                  <p className="text-xs text-muted-foreground">Day {currentDay} of 100</p>
+                </div>
+              </div>
+
+              {/* Right side: User section */}
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild>
+                  <Button variant="ghost" className="h-auto p-2">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback>U</AvatarFallback>
+                      </Avatar>
+                      <div className="text-left hidden xl:block">
+                        <p className="text-sm font-medium">User</p>
+                        <p className="text-xs text-muted-foreground">demo@focus.com</p>
+                      </div>
+                    </div>
+                  </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Portal>
+                  <DropdownMenu.Content 
+                    className="w-56 bg-white border border-gray-200 rounded-md shadow-lg p-1 z-50" 
+                    align="end"
+                    sideOffset={8}
+                  >
+                    <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded cursor-pointer outline-none">
+                      <User className="h-4 w-4" />
+                      Profile
+                    </DropdownMenu.Item>
+                    
+                    <DropdownMenu.Item 
+                      className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded cursor-pointer outline-none"
+                      onClick={() => router.push("/dashboard/settings")}
+                    >
+                      <Settings className="h-4 w-4" />
+                      Settings
+                    </DropdownMenu.Item>
+                    
+                    <DropdownMenu.Separator className="h-px bg-gray-200 my-1" />
+                    
+                    <DropdownMenu.Item 
+                      className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded cursor-pointer outline-none"
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign out
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Root>
+            </div>
           </div>
 
           {/* Navigation */}
@@ -139,9 +224,12 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
               <p className="text-sm font-medium mb-1">100 Days Challenge</p>
               <div className="flex items-center gap-2">
                 <div className="h-2 bg-muted rounded-full flex-1">
-                  <div className="h-2 bg-primary rounded-full w-[1%]" />
+                  <div 
+                    className="h-2 bg-primary rounded-full transition-all duration-300" 
+                    style={{ width: `${getProgress()}%` }}
+                  />
                 </div>
-                <span className="text-xs text-muted-foreground">1%</span>
+                <span className="text-xs text-muted-foreground">{getProgress()}%</span>
               </div>
             </div>
           </div>
