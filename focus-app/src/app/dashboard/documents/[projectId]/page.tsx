@@ -3,10 +3,8 @@
 import { useState, useEffect, useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { useDocuments } from "@/contexts/DocumentsContext"
 import { MarkdownEditor } from "@/components/documents/MarkdownEditor"
 import { 
@@ -14,10 +12,7 @@ import {
   Plus,
   Search,
   FileText,
-  MoreHorizontal,
-  Trash2,
-  Edit,
-  Calendar
+  MoreHorizontal
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -28,7 +23,6 @@ export default function ProjectDetailPage() {
     projects, 
     getProjectDocuments, 
     selectProject, 
-    selectedProject, 
     selectDocument, 
     selectedDocument,
     addDocument,
@@ -143,7 +137,6 @@ export default function ProjectDetailPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
-              size="sm"
             />
           </div>
           
