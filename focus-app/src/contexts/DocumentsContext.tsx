@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, ReactNode } from "react"
+import { createContext, useContext, useState, ReactNode, useCallback, useMemo } from "react"
 
 interface Document {
   id: string
@@ -187,7 +187,7 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null)
 
-  const addProject = (projectData: Omit<Project, "id" | "dateCreated" | "dateModified" | "documentCount">) => {
+  const addProject = useCallback((projectData: Omit<Project, "id" | "dateCreated" | "dateModified" | "documentCount">) => {
     const newProject: Project = {
       ...projectData,
       id: Date.now().toString(),
@@ -196,9 +196,9 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
       documentCount: 0
     }
     setProjects(prev => [...prev, newProject])
-  }
+  }, [])
 
-  const updateProject = (id: string, updates: Partial<Project>) => {
+  const updateProject = useCallback((id: string, updates: Partial<Project>) => {
     setProjects(prev => 
       prev.map(project => 
         project.id === id 
@@ -206,23 +206,23 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
           : project
       )
     )
-  }
+  }, [])
 
-  const deleteProject = (id: string) => {
+  const deleteProject = useCallback((id: string) => {
     setProjects(prev => prev.filter(project => project.id !== id))
     setDocuments(prev => prev.filter(doc => doc.projectId !== id))
     if (selectedProject?.id === id) {
       setSelectedProject(null)
       setSelectedDocument(null)
     }
-  }
+  }, [selectedProject])
 
-  const selectProject = (project: Project | null) => {
+  const selectProject = useCallback((project: Project | null) => {
     setSelectedProject(project)
     setSelectedDocument(null)
-  }
+  }, [])
 
-  const addDocument = (documentData: Omit<Document, "id" | "dateCreated" | "dateModified">) => {
+  const addDocument = useCallback((documentData: Omit<Document, "id" | "dateCreated" | "dateModified">) => {
     const newDocument: Document = {
       ...documentData,
       id: Date.now().toString(),
@@ -233,9 +233,9 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
     
     // Update project document count
     updateProject(documentData.projectId, {})
-  }
+  }, [updateProject])
 
-  const updateDocument = (id: string, updates: Partial<Document>) => {
+  const updateDocument = useCallback((id: string, updates: Partial<Document>) => {
     setDocuments(prev =>
       prev.map(doc =>
         doc.id === id
@@ -243,9 +243,9 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
           : doc
       )
     )
-  }
+  }, [])
 
-  const deleteDocument = (id: string) => {
+  const deleteDocument = useCallback((id: string) => {
     const document = documents.find(doc => doc.id === id)
     setDocuments(prev => prev.filter(doc => doc.id !== id))
     if (selectedDocument?.id === id) {
@@ -256,17 +256,17 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
     if (document) {
       updateProject(document.projectId, {})
     }
-  }
+  }, [documents, selectedDocument, updateProject])
 
-  const selectDocument = (document: Document | null) => {
+  const selectDocument = useCallback((document: Document | null) => {
     setSelectedDocument(document)
-  }
+  }, [])
 
-  const getProjectDocuments = (projectId: string) => {
+  const getProjectDocuments = useCallback((projectId: string) => {
     return documents.filter(doc => doc.projectId === projectId)
-  }
+  }, [documents])
 
-  const value: DocumentsContextType = {
+  const value = useMemo(() => ({
     projects,
     documents,
     selectedProject,
@@ -280,7 +280,21 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
     deleteDocument,
     selectDocument,
     getProjectDocuments,
-  }
+  }), [
+    projects,
+    documents,
+    selectedProject,
+    selectedDocument,
+    addProject,
+    updateProject,
+    deleteProject,
+    selectProject,
+    addDocument,
+    updateDocument,
+    deleteDocument,
+    selectDocument,
+    getProjectDocuments,
+  ])
 
   return (
     <DocumentsContext.Provider value={value}>

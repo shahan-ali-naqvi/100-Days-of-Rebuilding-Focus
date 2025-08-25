@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
@@ -40,8 +40,8 @@ export default function ProjectDetailPage() {
   const [newDocumentName, setNewDocumentName] = useState("")
   
   const projectId = params.projectId as string
-  const project = projects.find(p => p.id === projectId)
-  const documents = getProjectDocuments(projectId)
+  const project = useMemo(() => projects.find(p => p.id === projectId), [projects, projectId])
+  const documents = useMemo(() => getProjectDocuments(projectId), [getProjectDocuments, projectId])
 
   useEffect(() => {
     if (project) {
@@ -56,7 +56,7 @@ export default function ProjectDetailPage() {
     if (project && !selectedDocument && documents.length > 0) {
       selectDocument(documents[0])
     }
-  }, [project, selectedDocument, documents.length, selectDocument])
+  }, [project?.id, selectedDocument?.id, documents.length, selectDocument])
 
   const filteredDocuments = documents
     .filter(doc => 
