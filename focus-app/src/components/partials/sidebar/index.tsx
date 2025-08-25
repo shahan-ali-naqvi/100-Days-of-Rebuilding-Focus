@@ -15,17 +15,24 @@ import {
   Kanban,
   Menu,
   LogOut,
-  User
+  User,
+  ChevronLeft,
+  ChevronRight,
+  DollarSign,
+  FileText
 } from "lucide-react"
 import { useDay } from "@/contexts/DayContext"
 import { useRouter } from "next/navigation"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 interface SidebarProps {
   isOpen?: boolean
   onClose?: () => void
   onMenuToggle?: () => void
+  isCollapsed?: boolean
+  onToggleCollapse?: () => void
 }
 
 const navigation = [
@@ -39,6 +46,18 @@ const navigation = [
     name: "Tasks",
     href: "/dashboard/tasks",
     icon: Kanban,
+    implemented: true,
+  },
+  {
+    name: "Finance",
+    href: "/dashboard/finance",
+    icon: DollarSign,
+    implemented: true,
+  },
+  {
+    name: "Documents",
+    href: "/dashboard/documents",
+    icon: FileText,
     implemented: true,
   },
   {
@@ -73,7 +92,7 @@ const navigation = [
   },
 ]
 
-export function Sidebar({ isOpen = true, onClose, onMenuToggle }: SidebarProps) {
+export function Sidebar({ isOpen = true, onClose, onMenuToggle, isCollapsed = false, onToggleCollapse }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const { currentDay, getProgress } = useDay()
@@ -95,8 +114,9 @@ export function Sidebar({ isOpen = true, onClose, onMenuToggle }: SidebarProps) 
       
       {/* Sidebar */}
       <aside className={cn(
-        "fixed left-0 top-0 z-50 h-screen w-64 bg-card border-r transition-transform duration-200 ease-in-out lg:translate-x-0",
-        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        "fixed left-0 top-0 z-50 h-screen bg-card border-r transition-all duration-200 ease-in-out lg:translate-x-0",
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+        isCollapsed ? "lg:w-16" : "w-64"
       )}>
         <div className="flex h-full flex-col">
           {/* Header */}
@@ -125,14 +145,33 @@ export function Sidebar({ isOpen = true, onClose, onMenuToggle }: SidebarProps) 
                 <div className="bg-primary/10 p-2 rounded-lg">
                   <Target className="h-6 w-6 text-primary" />
                 </div>
-                <div>
-                  <span className="text-lg font-semibold">Focus</span>
-                  <p className="text-xs text-muted-foreground">Day {currentDay} of 100</p>
-                </div>
+                {!isCollapsed && (
+                  <div>
+                    <span className="text-lg font-semibold">Focus</span>
+                    <p className="text-xs text-muted-foreground">Day {currentDay} of 100</p>
+                  </div>
+                )}
               </div>
 
+              {/* Collapse toggle button */}
+              {onToggleCollapse && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onToggleCollapse}
+                  className="h-8 w-8"
+                >
+                  {isCollapsed ? (
+                    <ChevronRight className="h-4 w-4" />
+                  ) : (
+                    <ChevronLeft className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
+
               {/* Right side: User section */}
-              <DropdownMenu.Root>
+              {!isCollapsed && (
+                <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <Button variant="ghost" className="h-auto p-2">
                     <div className="flex items-center gap-2">
@@ -177,6 +216,7 @@ export function Sidebar({ isOpen = true, onClose, onMenuToggle }: SidebarProps) 
                   </DropdownMenu.Content>
                 </DropdownMenu.Portal>
               </DropdownMenu.Root>
+              )}
             </div>
           </div>
 
@@ -191,11 +231,13 @@ export function Sidebar({ isOpen = true, onClose, onMenuToggle }: SidebarProps) 
                     key={item.name}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium cursor-not-allowed opacity-50",
-                      "text-muted-foreground"
+                      "text-muted-foreground",
+                      isCollapsed && "justify-center"
                     )}
+                    title={isCollapsed ? item.name : undefined}
                   >
                     <item.icon className="h-5 w-5" />
-                    {item.name}
+                    {!isCollapsed && item.name}
                   </div>
                 )
               }
@@ -208,31 +250,40 @@ export function Sidebar({ isOpen = true, onClose, onMenuToggle }: SidebarProps) 
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                     isActive
                       ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent",
+                    isCollapsed && "justify-center"
                   )}
+                  title={isCollapsed ? item.name : undefined}
                 >
                   <item.icon className="h-5 w-5" />
-                  {item.name}
+                  {!isCollapsed && item.name}
                 </Link>
               )
             })}
+            
+            {/* Theme Toggle */}
+            <div className="px-1">
+              <ThemeToggle isCollapsed={isCollapsed} />
+            </div>
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t">
-            <div className="bg-muted/50 rounded-lg p-3">
-              <p className="text-sm font-medium mb-1">100 Days Challenge</p>
-              <div className="flex items-center gap-2">
-                <div className="h-2 bg-muted rounded-full flex-1">
-                  <div 
-                    className="h-2 bg-primary rounded-full transition-all duration-300" 
-                    style={{ width: `${getProgress()}%` }}
-                  />
+          {!isCollapsed && (
+            <div className="p-4 border-t">
+              <div className="bg-muted/50 rounded-lg p-3">
+                <p className="text-sm font-medium mb-1">100 Days Challenge</p>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 bg-muted rounded-full flex-1">
+                    <div 
+                      className="h-2 bg-primary rounded-full transition-all duration-300" 
+                      style={{ width: `${getProgress()}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-muted-foreground">{getProgress()}%</span>
                 </div>
-                <span className="text-xs text-muted-foreground">{getProgress()}%</span>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </aside>
     </>

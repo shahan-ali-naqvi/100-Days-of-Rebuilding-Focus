@@ -4,6 +4,9 @@ import { useState } from "react"
 import { Sidebar } from "@/components/partials/sidebar"
 import { DayProvider } from "@/contexts/DayContext"
 import { TaskProvider } from "@/contexts/TaskContext"
+import { FinanceProvider } from "@/contexts/FinanceContext"
+import { DocumentsProvider } from "@/contexts/DocumentsContext"
+import { cn } from "@/lib/utils"
 
 export default function DashboardLayout({
   children,
@@ -11,18 +14,26 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   return (
     <DayProvider>
       <TaskProvider>
-        <div className="flex h-screen bg-background">
+        <FinanceProvider>
+          <DocumentsProvider>
+            <div className="flex h-screen bg-background">
           <Sidebar 
             isOpen={sidebarOpen} 
             onClose={() => setSidebarOpen(false)} 
             onMenuToggle={() => setSidebarOpen(true)}
+            isCollapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           />
           
-          <main className="flex-1 overflow-y-auto lg:ml-64">
+          <main className={cn(
+            "flex-1 overflow-y-auto transition-all duration-200 ease-in-out",
+            sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
+          )}>
             {/* Mobile menu button */}
             <div className="lg:hidden fixed top-4 left-4 z-40">
               <button
@@ -40,6 +51,8 @@ export default function DashboardLayout({
             </div>
           </main>
         </div>
+          </DocumentsProvider>
+        </FinanceProvider>
       </TaskProvider>
     </DayProvider>
   )
